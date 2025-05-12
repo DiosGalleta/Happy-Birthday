@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Desafío Especial</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url('https://i.imgur.com/aK0iWKp.png') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      max-width: 80%;
+    }
+
+    .active {
+      display: flex;
+    }
+
+    input {
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .feedback {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+
+    img, video {
+      max-width: 100%;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pantalla de inicio -->
+  <div id="startScreen" class="screen active">
+    <h1>Hola, aventurera 🌟</h1>
+    <p>Antes de recibir tu regalo, debes completar una serie de desafíos. Responde con el corazón... y un poco de memoria. ¿Estás lista?</p>
+    <button onclick="nextStep()">¡Comenzar!</button>
+  </div>
+
+  <!-- Desafíos -->
+  <div id="challenge1" class="screen">
+    <h2>Desafío 1</h2>
+    <p>¿Cómo se llama nuestro primer perro?</p>
+    <input type="text" id="input1">
+    <button onclick="checkAnswer(1, 'toby')">Enviar</button>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/5_KM3CQn0qU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+  <div id="challenge2" class="screen">
+    <h2>Desafío 2</h2>
+    <p>¿Cuál fue nuestro primer viaje juntas?</p>
+    <input type="text" id="input2">
+    <button onclick="checkAnswer(2, 'parís')">Enviar</button>
+    <img src="https://i.imgur.com/YOUR_TRIP_IMAGE.jpg" alt="Pista visual 2">
+  </div>
+
+  <div id="challenge3" class="screen">
+    <h2>Desafío 3</h2>
+    <p>¿Qué dulce siempre compartimos en el cine?</p>
+    <input type="text" id="input3">
+    <button onclick="checkAnswer(3, 'gominolas')">Enviar</button>
+    <img src="https://i.imgur.com/YOUR_CANDY_IMAGE.jpg" alt="Pista visual 3">
+  </div>
+
+  <div id="challenge4" class="screen">
+    <h2>Desafío 4</h2>
+    <p>¿Cómo se llama tu planta favorita?</p>
+    <input type="text" id="input4">
+    <button onclick="checkAnswer(4, 'monstera')">Enviar</button>
+    <img src="https://i.imgur.com/YOUR_PLANT_IMAGE.jpg" alt="Pista visual 4">
+  </div>
+
+  <div id="challenge5" class="screen">
+    <h2>Desafío 5</h2>
+    <p>¿Qué palabra usamos como código secreto?</p>
+    <input type="text" id="input5">
+    <button onclick="checkAnswer(5, 'zafiro')">Enviar</button>
+    <video controls src="https://www.example.com/video5.mp4"></video>
+  </div>
+
+  <!-- Feedback correcto -->
+  <div id="successScreen" class="screen">
+    <h2>¡Correcto! 🎉</h2>
+    <p class="feedback" id="successMsg">Has superado este desafío.</p>
+    <img id="successImg" src="" alt="">
+    <button onclick="continueAfterSuccess()">Continuar</button>
+  </div>
+
+  <!-- Feedback incorrecto -->
+  <div id="failScreen" class="screen">
+    <h2>¡Ups! ❌</h2>
+    <p class="feedback" id="failMsg">Inténtalo de nuevo.</p>
+    <img id="failImg" src="" alt="">
+    <button onclick="retry()">Volver</button>
+  </div>
+
+  <!-- Pantalla final -->
+  <div id="endScreen" class="screen">
+    <h1>¡Felicidades! 🎁</h1>
+    <p>Has completado todos los desafíos. Tu regalo te espera... 💖</p>
+    <video controls src="https://www.example.com/final-message.mp4"></video>
+  </div>
+
+  <script>
+    let current = 0;
+    let awaitingNext = false;
+
+    const successMessages = [
+      '',
+      '¡Muy bien! Toby nunca será olvidado 🐾',
+      '¡Exacto! París fue inolvidable 💕',
+      '¡Sí! Las gominolas siempre fueron nuestras favoritas 🍬',
+      '¡Correcto! Tu monstera es única 🌿',
+      '¡Bravo! Nadie más sabría lo de "zafiro" 💎'
+    ];
+
+    const failMessages = [
+      '',
+      '¿Seguro? Piénsalo bien, era un perro adorable...',
+      'Mmm... ¿recuerdas aquel viaje con la Torre Eiffel?',
+      'Pista: siempre eran coloridas y dulces.',
+      'Vamos, sabes bien qué planta tienes en tu salón.',
+      'Pista: es una piedra preciosa de color azul.'
+    ];
+
+    const successImages = [
+      '',
+      'https://i.imgur.com/YOUR_DOG_SUCCESS.jpg',
+      'https://i.imgur.com/YOUR_PARIS_SUCCESS.jpg',
+      'https://i.imgur.com/YOUR_CANDY_SUCCESS.jpg',
+      'https://i.imgur.com/YOUR_PLANT_SUCCESS.jpg',
+      'https://i.imgur.com/YOUR_SECRET_SUCCESS.jpg'
+    ];
+
+    const failImages = [
+      '',
+      'https://i.imgur.com/YOUR_DOG_FAIL.jpg',
+      'https://i.imgur.com/YOUR_PARIS_FAIL.jpg',
+      'https://i.imgur.com/YOUR_CANDY_FAIL.jpg',
+      'https://i.imgur.com/YOUR_PLANT_FAIL.jpg',
+      'https://i.imgur.com/YOUR_SECRET_FAIL.jpg'
+    ];
+
+    function nextStep() {
+      showScreen(`challenge${++current}`);
+    }
+
+    function retry() {
+      showScreen(`challenge${current}`);
+    }
+
+    function checkAnswer(num, correctAnswer) {
+      const input = document.getElementById(`input${num}`).value.trim().toLowerCase();
+      if (input === correctAnswer.toLowerCase()) {
+        document.getElementById('successMsg').textContent = successMessages[num];
+        document.getElementById('successImg').src = successImages[num];
+        awaitingNext = (num < 5);
+        showScreen('successScreen');
+        if (!awaitingNext) {
+          document.querySelector('#successScreen button').onclick = () => showScreen('endScreen');
+        }
+      } else {
+        document.getElementById('failMsg').textContent = failMessages[num];
+        document.getElementById('failImg').src = failImages[num];
+        showScreen('failScreen');
+      }
+    }
+
+    function continueAfterSuccess() {
+      if (awaitingNext) {
+        nextStep();
+      }
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+  </script>
+
+</body>
+</html>
